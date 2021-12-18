@@ -2,9 +2,7 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class CarPlaceActor extends AbstractActor {
 
@@ -39,8 +37,6 @@ public class CarPlaceActor extends AbstractActor {
     }
 
     public void checkPlaces() {
-//        System.out.println(getSelf().path() + " was asked for place by " + getSender().path());
-//        System.out.println("Place was asked by: " + getSender() + "    and:   " + parkedCar);
         if (parkedCar == null) {
             parkedCar = getSender();
             getSender().tell(Command.YOU_CAN_TAKE_PLACE, getSelf());

@@ -17,7 +17,7 @@ public class CarProducerActor extends Thread {
         while (true) {
             try {
                 i++;
-                Thread.sleep((int) (Math.random() * 4000) + 3000);
+                Thread.sleep((int) (Math.random() * 2000) + 500);
                 system.actorOf(CarActor.props(parkPlaces, "CAR-" + i), "car_" + i);
             } catch (InterruptedException e){}
         }

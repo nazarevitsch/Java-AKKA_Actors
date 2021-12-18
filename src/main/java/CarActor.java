@@ -19,6 +19,15 @@ public class CarActor extends AbstractActor {
                 parkPlaces[i].tell(Command.DOES_PLACE_FREE, getSelf());
             }
         }
+        if (parkPlace == null) {
+            getContext().system().scheduler().scheduleOnce(
+                    Duration.ofMillis((int) (Math.random() * 2000) + 2000),
+                    getSelf(),
+                    Command.I_GO_AWAY,
+                    getContext().dispatcher(),
+                    getSelf()
+            );
+        }
     }
 
     public static Props props(ActorRef[] parkPlaces, String name) {
@@ -29,6 +38,9 @@ public class CarActor extends AbstractActor {
         return receiveBuilder()
                 .matchEquals(Command.YOU_CAN_TAKE_PLACE, r -> {
                     takePlace();
+                })
+                .matchEquals(Command.I_GO_AWAY, r -> {
+                    stopWaiting();
                 })
                 .build();
     }
@@ -46,6 +58,13 @@ public class CarActor extends AbstractActor {
     private void waitingAndGoAway() {
         getContext().system().scheduler().scheduleOnce(Duration.ofMillis((int) (Math.random() * 3000) + 3000),
                 parkPlace, Command.I_GO_AWAY, getContext().dispatcher(), getSelf());
+    }
+
+    private void stopWaiting(){
+        if (parkPlace == null) {
+            System.out.println("LEAVE:  " + name);
+            getContext().getSystem().stop(getSelf());
+        }
     }
 
 }
