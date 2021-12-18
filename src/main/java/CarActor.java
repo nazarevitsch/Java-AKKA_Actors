@@ -2,19 +2,17 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 
-import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import static akka.pattern.Patterns.ask;
 
 public class CarActor extends AbstractActor {
 
     private ActorRef[] parkPlaces;
     private ActorRef parkPlace;
+    private String name;
 
-    public CarActor(ActorRef[] parkPlaces) {
-        System.out.println("New car has just arrived " + getSelf());
+    public CarActor(ActorRef[] parkPlaces, String name) {
+        System.out.println("New car has just arrived " + name);
+        this.name = name;
         this.parkPlaces = parkPlaces;
         for (int i = 0; i < parkPlaces.length; i++) {
             if (parkPlace == null) {
@@ -23,8 +21,8 @@ public class CarActor extends AbstractActor {
         }
     }
 
-    public static Props props(ActorRef[] parkPlaces) {
-        return Props.create(CarActor.class, (Object) parkPlaces);
+    public static Props props(ActorRef[] parkPlaces, String name) {
+        return Props.create(CarActor.class, (Object) parkPlaces, name);
     }
 
     public Receive createReceive() {
@@ -38,7 +36,7 @@ public class CarActor extends AbstractActor {
     private void takePlace() {
         if (parkPlace == null) {
             parkPlace = getSender();
-            System.out.println(getSelf() + " take place: " + parkPlace);
+            System.out.println(name + " take place: " + parkPlace);
             waitingAndGoAway();
         } else {
             getSender().tell(Command.I_HAVE_ALREADY_PLACE, getSelf());
@@ -46,7 +44,7 @@ public class CarActor extends AbstractActor {
     }
 
     private void waitingAndGoAway() {
-        getContext().system().scheduler().scheduleOnce(Duration.ofMillis(4000),
+        getContext().system().scheduler().scheduleOnce(Duration.ofMillis((int) (Math.random() * 3000) + 3000),
                 parkPlace, Command.I_GO_AWAY, getContext().dispatcher(), getSelf());
     }
 
